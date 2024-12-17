@@ -1,0 +1,19 @@
+FROM node:16
+
+# Configuración de trabajo para el frontend
+WORKDIR /app
+
+# Copiar dependencias
+COPY ./package*.json ./
+
+# Instalar dependencias
+RUN npm install
+
+# Copiar el código del frontend
+COPY . .
+
+# Exponer el puerto de desarrollo (por defecto 5173 en Vite)
+EXPOSE 5173
+
+# Comando para iniciar el frontend
+CMD ["npm", "run", "dev"]
