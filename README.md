@@ -141,11 +141,12 @@ Una vez que los contenedores estén levantados, accede a los servicios en los si
 
 
 ## Base de Datos
-El proyecto utiliza **MongoDB** para el almacenamiento de datos.
-
-1. Si estás usando Docker, MongoDB se ejecutará automáticamente en un contenedor.
-2. Si prefieres una base de datos externa (por ejemplo, MongoDB Atlas), configura la variable DB_URL en el backend.
-
+#### El proyecto utiliza **MongoDB** como base de datos. 
+Puedes usar una instancia local o una base de datos alojada en MongoDB Atlas.
+- La URL de conexión actual en el archivo .env es:
+```
+DB_URL=mongodb+srv://magdielaraneda2001:QU97Ocnl2R4sjHFi@usodesalas.j9dgbj3.mongodb.net/?retryWrites=true&w=majority&appName=UsoDeSalas
+```
 
 ## Compatibilidad de Sistema Operativo
 ### Este proyecto ha sido probado y es compatible con los siguientes sistemas operativos:
