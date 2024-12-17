@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-# ProyectoTesis
-=======
 # ProyectoTesis
 Este repositorio contiene un sistema completo que integra un **backend** con Express y MongoDB y un **frontend** con React y Vite. El proyecto utiliza Docker para simplificar el despliegue y ejecución de todos los servicios.
 
