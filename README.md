@@ -81,7 +81,36 @@ VITE_BACKEND_URL=http://localhost:3000
 ```
 
 
-## Ejecución del Proyecto 🚀
+## Ejecución manual del Proyecto 🚀
+### - Instalación del Backend
+
+#### 1. Navega a la carpeta backend e instala las dependencias:
+```
+cd backend
+npm install
+```
+
+#### 2. Inicia el servidor del backend:
+```
+npm start
+```
+El backend estará disponible en: http://localhost:3000.
+
+### - Instalación del Frontend
+
+#### 1. Navega a la carpeta frontend e instala las dependencias:
+```
+cd frontend
+npm install
+```
+
+#### 2. Inicia el servidor del frontend:
+```
+npm run dev
+```
+El frontend estará disponible en: http://localhost:5173.
+
+
 
 ### 1. Construir los Contenedores
 Desde la raíz del proyecto, ejecuta los siguientes comandos:
