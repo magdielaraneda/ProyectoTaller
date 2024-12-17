@@ -60,6 +60,14 @@ El proyecto está organizado de la siguiente manera:
 #### Backend
 
 Crea un archivo **`.env`** en la carpeta **`config/`** que esta dentro de la carpeta src del backend con las siguientes variables:
+- accede primero a la carpeta config:
+```
+cd backend/
+cd src/
+cd config/
+```
+#### .env  
+
 ```
 PORT=3000
 HOST=localhost
@@ -67,8 +75,6 @@ DB_URL=mongodb+srv://magdielaraneda2001:QU97Ocnl2R4sjHFi@usodesalas.j9dgbj3.mong
 ACCESS_JWT_SECRET=EXNLX1KT2AJAMXM19G4CBHY16GI8AL6S4DKC6VLNH1UV2E9K1GR43YMXZFAF2XGCIUJBUUA11ETGSRMCM
 REFRESH_JWT_SECRET=YLWGP3X1HED396SRWFGNTXYJX1ZU6L9K27VWTG7UE8JES7I2ACV2RJL2GWA3AQJRCC200FHKBEX95DJV7
 API_KEY=re_MvmsG22A_Gh5idqBTzjAkb6aJS8qa9uy4
-
-
 
 ```
 
