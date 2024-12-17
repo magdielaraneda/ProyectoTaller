@@ -149,13 +149,39 @@ DB_URL=mongodb+srv://magdielaraneda2001:QU97Ocnl2R4sjHFi@usodesalas.j9dgbj3.mong
 ```
 
 ## Compatibilidad de Sistema Operativo
-### Este proyecto ha sido probado y es compatible con los siguientes sistemas operativos:
+### Windows
+- Instala Node.js desde el instalador oficial.
+- Asegúrate de añadir node y npm al PATH durante la instalación.
+- Verifica que MongoDB esté ejecutándose localmente o usa MongoDB Atlas.
 
-- **Windows 10/11**
-- **Ubuntu 20.04 / 22.04 (Linux)**
-- **macOS Monterey / Ventura**
+### Linux (Ubuntu)
+- Instala Node.js utilizando apt (o nvm si prefieres manejar versiones).
+```
+sudo apt update
+sudo apt install nodejs npm -y
+```
+- Verifica la instalación con:
+```
+node -v
+npm -v
+````
+- Instala MongoDB localmente o configura MongoDB Atlas.
 
-Es recomendable tener Docker Desktop instalado y actualizado en sistemas Windows y macOS, y Docker Engine en sistemas Linux para asegurar el correcto funcionamiento del entorno de contenedores.
+### macOS
+- Instala Homebrew si aún no lo tienes:
+```
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+- Instala Node.js y npm con:
+```
+brew install node
+```
+- Verifica la instalación:
+```
+node -v
+npm -v
+```
+- Configura MongoDB localmente o usa MongoDB Atlas.
 
 ## License / Licencia ©️
 
