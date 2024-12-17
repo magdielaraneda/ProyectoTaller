@@ -82,7 +82,7 @@ VITE_BACKEND_URL=http://localhost:3000
 
 
 ## Ejecución manual del Proyecto 🚀
-### - Instalación del Backend
+### -Instalación del Backend
 
 #### 1. Navega a la carpeta backend e instala las dependencias:
 ```
@@ -96,7 +96,7 @@ npm start
 ```
 El backend estará disponible en: http://localhost:3000.
 
-### - Instalación del Frontend
+### -Instalación del Frontend
 
 #### 1. Navega a la carpeta frontend e instala las dependencias:
 ```
@@ -109,20 +109,6 @@ npm install
 npm run dev
 ```
 El frontend estará disponible en: http://localhost:5173.
-
-
-
-### 1. Construir los Contenedores
-Desde la raíz del proyecto, ejecuta los siguientes comandos:
-```
-docker-compose build
-```
-
-### 2. Levantar los Servicios
-Levanta todos los servicios (MongoDB, Backend y Frontend):
-```
-docker-compose up
-```
 
 ## Ejecución de Pruebas 📝
 ### Backend
@@ -160,22 +146,6 @@ El proyecto utiliza **MongoDB** para el almacenamiento de datos.
 1. Si estás usando Docker, MongoDB se ejecutará automáticamente en un contenedor.
 2. Si prefieres una base de datos externa (por ejemplo, MongoDB Atlas), configura la variable DB_URL en el backend.
 
-
-## Comandos Útiles 💡
-#### Detener los contenedores:
-```
-docker-compose down
-```
-
-#### Ver los logs en tiempo real:
-```
-docker-compose logs -f
-```
-
-#### Reconstruir los contenedores:
-```
-docker-compose build
-```
 
 ## Compatibilidad de Sistema Operativo
 ### Este proyecto ha sido probado y es compatible con los siguientes sistemas operativos:
