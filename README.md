@@ -164,5 +164,3 @@ Eres libre de usar, modificar y distribuir este código bajo los términos de la
 
 See the full license in the [LICENSE](./LICENSE) file.  
 Consulta la licencia completa en el archivo [LICENSE](./LICENSE).
->>>>>>> e9a86a8 (backend)
-# ProyectoTaller
