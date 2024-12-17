@@ -155,7 +155,7 @@ DB_URL=mongodb+srv://magdielaraneda2001:QU97Ocnl2R4sjHFi@usodesalas.j9dgbj3.mong
 - Ubuntu 20.04 / 22.04 (Linux)
 - macOS Monterey / Ventura
    
-#### - Requisitos previos
+#### Requisitos previos
 Para asegurar el funcionamiento del proyecto, verifica que el sistema cumpla con los siguientes requisitos:
 1. Node.js (versión 16 o superior):
 2. Descarga e instala desde: https://nodejs.org
