@@ -81,7 +81,7 @@ VITE_BACKEND_URL=http://localhost:3000
 ```
 
 
-## Ejecución manual del Proyecto 🚀
+## Ejecución del Proyecto 🚀
 ### -Instalación del Backend
 
 #### 1. Navega a la carpeta backend e instala las dependencias:
