@@ -149,6 +149,26 @@ DB_URL=mongodb+srv://magdielaraneda2001:QU97Ocnl2R4sjHFi@usodesalas.j9dgbj3.mong
 ```
 
 ## Compatibilidad de Sistema Operativo
+### Este proyecto es compatible con los siguientes sistemas operativos:
+
+- Windows 10/11
+- Ubuntu 20.04 / 22.04 (Linux)
+- macOS Monterey / Ventura
+   
+#### - Requisitos previos
+Para asegurar el funcionamiento del proyecto, verifica que el sistema cumpla con los siguientes requisitos:
+1. Node.js (versión 16 o superior):
+2. Descarga e instala desde: https://nodejs.org
+3. MongoDB (local o en la nube):
+
+- Si usas una base de datos local, asegúrate de que el servicio MongoDB esté activo.
+Si prefieres MongoDB Atlas, configura las variables de entorno correspondientes en el archivo .env.
+
+4. Navegador Web:
+Cualquier navegador moderno como Chrome, Firefox, o Edge.
+
+## Notas por Sistema Operativo
+
 ### Windows
 - Instala Node.js desde el instalador oficial.
 - Asegúrate de añadir node y npm al PATH durante la instalación.
