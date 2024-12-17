@@ -14,7 +14,7 @@ Este repositorio contiene un sistema completo que integra un **backend** con Exp
 
 ### Clona el repositorio:
 ```
-git clone https://github.com/tu-usuario/ProyectoTaller.git
+git clone https://github.com/magdielaraneda/ProyectoTaller.git
 cd ProyectoTesis
 ```
 Antes de ejecutar el proyecto, asegúrate de tener instalados los siguientes programas en tu máquina:
