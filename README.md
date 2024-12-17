@@ -61,13 +61,14 @@ El proyecto está organizado de la siguiente manera:
 
 Crea un archivo **`.env`** en la carpeta **`backend`** con las siguientes variables:
 
-```.env
+```
 PORT=3000
 HOST=localhost
-DB_URL=mongodb+srv://usuario:contraseña@usodesalas.mongodb.net/?retryWrites=true&w=majority&appName=UsoDeSalas
-ACCESS_JWT_SECRET=EXNLX1KT2AJAMXM19G4CBHY16GI8AL6S4DKC6VLNH1UV2E9K1GR43YMXZFAF2XGCIUJBUUA11ETGSRMCM
-REFRESH_JWT_SECRET=YLWGP3X1HED396SRWFGNTXYJX1ZU6L9K27VWTG7UE8JES7I2ACV2RJL2GWA3AQJRCC200FHKBEX95DJV7
-API_KEY=re_MvmsG22A_Gh5idqBTzjAkb6aJS8qa9uy4
+DB_URL=mongodb+srv://<usuario>:<contraseña>@<cluster>.mongodb.net/test
+ACCESS_JWT_SECRET=your_access_secret_here
+REFRESH_JWT_SECRET=your_refresh_secret_here
+API_KEY=your_api_key_here
+
 
 ```
 
@@ -75,7 +76,7 @@ API_KEY=re_MvmsG22A_Gh5idqBTzjAkb6aJS8qa9uy4
 
 Crea un archivo **`.env`** en la carpeta **`frontend`** con la siguiente variable:
 
-```.env
+```
 VITE_BACKEND_URL=http://localhost:3000
 ```
 
