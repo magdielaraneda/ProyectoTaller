@@ -47,8 +47,10 @@ El proyecto está organizado de la siguiente manera:
 │   ├── tailwind.config.js    # Configuración de Tailwind CSS
 │   └── .gitignore            # Archivos ignorados del frontend
 │
+├── .gitattributes            # Configuración global de atributos Git (saltos de línea, binarios, etc.)
 ├── docker-compose.yml        # Orquestación de servicios Docker
-└── README.md                 # Este archivo
+└── README.md                 # Documentación principal del proyecto
+
 ```
 
 ## Configuración del Proyecto ⚙️
