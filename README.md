@@ -59,7 +59,7 @@ El proyecto está organizado de la siguiente manera:
 
 #### Backend
 
-Crea un archivo **`.env`** en la carpeta **`backend`** con las siguientes variables:
+Crea un archivo **`.env`** en la carpeta **`config/`** que esta dentro de la carpeta src del backend con las siguientes variables:
 ```
 PORT=3000
 HOST=localhost
