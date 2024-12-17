@@ -111,7 +111,7 @@ npx cypress open
 
 ## Funcionalidades y Uso de la Aplicación
 ### Funcionalidades Principales:
-- **Autenticación y Autorización:** Registro, inicio de sesión y roles (admin, gerente, colaborador, cliente).
+- **Autenticación y Autorización:** Registro, inicio de sesión y roles (admin, gerente, colaborador).
 - **Sistema de Reportes:** Generación, visualización y gestión de reportes.
 - **Integración con MongoDB:** Base de datos con soporte a estructuras relacionales.
 - **Navegación Dinámica:** UI dinámica según el rol del usuario.
