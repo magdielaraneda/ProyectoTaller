@@ -15,7 +15,7 @@ const httpServer = createServer(app);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const allowedOrigins = ["http://localhost:5173"];
+const allowedOrigins = ['https://vercel.com/magdielaranedas-projects/frontend/DAerNkGHQYxX2GeJ368DRAng67xh', 'http://localhost:5173'];
 app.use(
   cors({
     origin: allowedOrigins,
