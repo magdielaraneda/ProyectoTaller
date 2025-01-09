@@ -15,14 +15,17 @@ const httpServer = createServer(app);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const allowedOrigins = ['https://vercel.com/magdielaranedas-projects/frontend/DAerNkGHQYxX2GeJ368DRAng67xh', 'http://localhost:5173'];
+const allowedOrigins = [
+  "https://frontend-b5hjmqltg-magdielaranedas-projects.vercel.app/",
+  "http://localhost:5173",
+];
+
 app.use(
   cors({
     origin: allowedOrigins,
     credentials: true,
   })
 );
-
 
 app.use(express.json());
 app.use("/api", indexRoutes);
@@ -43,14 +46,13 @@ io.on("connection", (socket) => {
   socket.on("registrarUsuario", async (userId) => {
     usuariosConectados[userId] = socket.id;
     console.log(`Usuario ${userId} vinculado al socket ${socket.id}`);
-  
+
     const usuarios = await User.find({}, "_id username"); // Solo devuelve _id y username
     io.emit("usuariosConectados", {
       conectados: Object.keys(usuariosConectados), // Lista de IDs conectados
       usuarios, // Lista de todos los usuarios
     });
   });
-  
 
   socket.on("mensaje", async (data) => {
     const { senderId, receiverId, content } = data;
@@ -58,33 +60,30 @@ io.on("connection", (socket) => {
       if (!senderId || !receiverId || !content) {
         return socket.emit("error", { message: "Datos incompletos" });
       }
-  
+
       // Obtenemos el usuario emisor
       const sender = await User.findById(senderId, "username");
       if (!sender) {
         return socket.emit("error", { message: "Usuario emisor no encontrado" });
       }
-  
+
       // Creamos el mensaje en la base de datos
       const mensaje = await Mensaje.create({ senderId, receiverId, content });
-  
-     // Enviamos el mensaje al receptor si está conectado
-const receptorSocketId = usuariosConectados[receiverId];
-if (receptorSocketId) {
-  io.to(receptorSocketId).emit("nuevoMensaje", {
-    senderId: mensaje.senderId,
-    senderUsername: sender.username, // Incluimos el username del emisor
-    receiverId: mensaje.receiverId,
-    content: mensaje.content,
-  });
-}
 
+      // Enviamos el mensaje al receptor si está conectado
+      const receptorSocketId = usuariosConectados[receiverId];
+      if (receptorSocketId) {
+        io.to(receptorSocketId).emit("nuevoMensaje", {
+          senderId: mensaje.senderId,
+          senderUsername: sender.username, // Incluimos el username del emisor
+          receiverId: mensaje.receiverId,
+          content: mensaje.content,
+        });
+      }
     } catch (error) {
       console.error("Error al guardar el mensaje:", error);
     }
   });
-  
-  
 
   socket.on("disconnect", () => {
     console.log("Usuario desconectado:", socket.id);
@@ -108,7 +107,6 @@ const startServer = async () => {
     httpServer.listen(3000, () => {
       console.log("Servidor corriendo en http://localhost:3000");
     });
-    
   } catch (error) {
     console.error("Error al iniciar el servidor:", error.message);
     process.exit(1);
@@ -124,6 +122,5 @@ app._router.stack
     methods: Object.keys(r.route.methods),
   }))
   .forEach((route) => console.log(route));
-
 
 export { app, httpServer };
