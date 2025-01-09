@@ -11,6 +11,7 @@ export default {
         azul: '#3498DB',
         rojo: '#E74C3C',
         negro: '#000000',
+        headerText: '#ffffff',
         indigo: {
           600: '#4c51bf',
           700: '#434190',

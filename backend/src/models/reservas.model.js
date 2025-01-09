@@ -1,10 +1,11 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const { Schema, model } = mongoose; 
+const { Schema, model } = mongoose;
 
 const ReservacionSchema = new Schema({
   servicioId: { type: mongoose.Schema.Types.ObjectId, ref: "Servicio", required: true },
   horario: { type: Date, required: true },
+  horarioFin: { type: Date, required: true },
   clienteNombre: { type: String, required: true },
   clienteEmail: { type: String, required: true },
   clienteTelefono: { type: String, required: true },
@@ -13,8 +14,8 @@ const ReservacionSchema = new Schema({
   precio: { type: Number, required: true },
   estado: {
     type: String,
-    enum: ["pendiente", "asignado", "completado"],
-    default: "pendiente",
+    enum: ["en proceso", "completada"],
+    default: "en proceso",
   },
   colaboradorId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   nombreServicio: { type: String, required: true },

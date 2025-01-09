@@ -89,6 +89,32 @@ export const showCancelarReserva = async () => {
 };
 
 /**
+ * Muestra una notificación estilo "toast".
+ * @param {string} icon - Icono (info, success, warning, error).
+ * @param {string} title - Título de la notificación.
+ * @param {string} text - Mensaje de la notificación.
+ * @param {function} onClick - Acción a realizar al hacer clic (opcional).
+ */
+export const showToastNotification = (icon, title, text, onClick = null) => {
+  Swal.fire({
+    toast: true,
+    position: "top-end",
+    icon,
+    title,
+    text,
+    showConfirmButton: false,
+    timer: 5000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener("click", () => {
+        if (onClick) onClick();
+      });
+    },
+  });
+};
+
+
+/**
  * Muestra una alerta de éxito al crear un servicio.
  */
 export const showCrearServicio = async () => {

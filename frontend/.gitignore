@@ -26,3 +26,5 @@ build/
 # Archivos innecesarios de sistemas
 Thumbs.db
 *.swp
+
+.vercel

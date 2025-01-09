@@ -12,6 +12,13 @@ export const enviarEncuesta = async (req, res) => {
   const { reservacionId, clasificacion, comentario } = req.body;
 
   try {
+    // Verificar si ya existe una encuesta para la reservación
+    const encuestaExistente = await Encuesta.findOne({ reservacionId });
+    if (encuestaExistente) {
+      return res.status(400).json({ error: "Ya existe una encuesta para esta reservación." });
+    }
+
+    // Crear la nueva encuesta
     const nuevaEncuesta = new Encuesta({ reservacionId, clasificacion, comentario });
     await nuevaEncuesta.save();
 
@@ -22,24 +29,25 @@ export const enviarEncuesta = async (req, res) => {
 };
 
 export const getEncuestas = async (req, res) => {
-  const { id } = req.params;
-
   try {
-    if (id) {
-      const encuesta = await Encuesta.findById(id)
-        .populate("reservacionId", "colaboradorId servicioId");
+    const encuestas = await Encuesta.find()
+      .populate({
+        path: "reservacionId",
+        select: "clienteNombre clienteEmail colaboradorId horario",
+        populate: {
+          path: "colaboradorId",
+          select: "username",
+        },
+      })
+      .sort({ "reservacionId.horario": 1 });
 
-      if (!encuesta) return res.status(404).json({ error: "Encuesta no encontrada" });
-
-      return res.json(encuesta);
-    }
-
-    const encuestas = await Encuesta.find().populate("reservacionId", "colaboradorId servicioId");
     res.json(encuestas);
   } catch (error) {
+    console.error("Error al obtener encuestas:", error);
     res.status(500).json({ error: "Error al obtener encuestas", details: error.message });
   }
 };
+
 
 export const getEncuestasByColaborador = async (req, res) => {
   const { username } = req.query;
@@ -70,10 +78,13 @@ export const eliminarEncuesta = async (req, res) => {
 
   try {
     const encuestaEliminada = await Encuesta.findByIdAndDelete(id);
-    if (!encuestaEliminada) return res.status(404).json({ error: "Encuesta no encontrada" });
+    if (!encuestaEliminada) {
+      return res.status(404).json({ error: 'Encuesta no encontrada' });
+    }
 
-    res.json({ message: "Encuesta eliminada con éxito" });
+    res.json({ message: 'Encuesta eliminada con éxito' });
   } catch (error) {
-    res.status(500).json({ error: "Error al eliminar la encuesta", details: error.message });
+    console.error('Error al eliminar la encuesta:', error);
+    res.status(500).json({ error: 'Error al eliminar la encuesta', details: error.message });
   }
 };

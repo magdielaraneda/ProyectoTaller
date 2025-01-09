@@ -1,57 +1,97 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { crearReservacion } from "../services/reserva.service";
-import { getServicios } from "../services/servicio.service";
+import {
+  crearReservacion,
+  getHorarioColaborador,
+  getColaboradorPorId,
+} from "../services/reserva.service";
 import { showSuccessNotification, showErrorNotification } from "../helpers/swaHelper";
-import { FaCalendarAlt, FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaStickyNote, FaClock } from "react-icons/fa";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import { useParams } from "react-router-dom";
+import { obtenerServicioPorId } from "../services/servicio.service";
 
 function CrearReserva() {
-  const { id } = useParams();
-  const [servicio, setServicio] = useState(null);
-  const [fecha, setFecha] = useState(null);
-  const [hora, setHora] = useState("");
+  const { servicioId, colaboradorId } = useParams();
+  const [horario, setHorario] = useState([]);
+  const [horarioSeleccionado, setHorarioSeleccionado] = useState(null);
   const [clienteNombre, setClienteNombre] = useState("");
   const [clienteEmail, setClienteEmail] = useState("");
   const [clienteTelefono, setClienteTelefono] = useState("");
   const [direccionCliente, setDireccionCliente] = useState("");
   const [observaciones, setObservaciones] = useState("");
+  const [semanaInicio, setSemanaInicio] = useState(new Date());
+  const [modalVisible, setModalVisible] = useState(false);
+  const [servicioNombre, setServicioNombre] = useState("");
+  const [colaboradorNombre, setColaboradorNombre] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchServicio = async () => {
-      try {
-        const data = await getServicios();
-        const servicioSeleccionado = data.find((servicio) => servicio._id === id);
-        if (servicioSeleccionado) {
-          setServicio(servicioSeleccionado);
-        } else {
-          console.error("Servicio no encontrado");
-        }
-      } catch (error) {
-        console.error("Error al obtener los servicios:", error);
-      }
-    };
-
-    fetchServicio();
-  }, [id]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const fetchHorario = async () => {
     try {
-      if (!fecha || !hora) {
-        showErrorNotification("Por favor selecciona una fecha y una hora válida.");
+      const data = await getHorarioColaborador(colaboradorId, semanaInicio);
+
+      if (!Array.isArray(data)) {
+        console.error("Error: los datos de horarios no son un array:", data);
         return;
       }
 
-      const horario = new Date(fecha);
-      const [horaSeleccionada, minutosSeleccionados] = hora.split(":");
-      horario.setHours(horaSeleccionada, minutosSeleccionados);
+      const fechaActual = new Date();
+      fechaActual.setHours(0, 0, 0, 0);
+
+      const horariosValidados = data
+        .filter((dia) => {
+          const diaFecha = new Date(dia.dia);
+          diaFecha.setHours(0, 0, 0, 0);
+          return diaFecha.getTime() > fechaActual.getTime();
+        })
+        .map((dia) => ({
+          ...dia,
+          horariosDia: dia.horariosDia?.map((bloque) => ({
+            ...bloque,
+            ocupado: !!bloque.ocupado,
+          })),
+        }));
+
+      setHorario(horariosValidados);
+    } catch (error) {
+      console.error("Error al obtener horarios:", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchDatos = async () => {
+      try {
+        const servicio = await obtenerServicioPorId(servicioId);
+        const colaborador = await getColaboradorPorId(colaboradorId);
+
+        setServicioNombre(servicio.nombre || "Servicio no encontrado");
+        setColaboradorNombre(colaborador.username || "Colaborador no encontrado");
+      } catch (error) {
+        console.error("Error al obtener los datos del servicio o colaborador:", error);
+      }
+    };
+
+    fetchDatos();
+    fetchHorario();
+  }, [servicioId, colaboradorId, semanaInicio]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      if (!horarioSeleccionado) {
+        showErrorNotification("Por favor, selecciona un horario válido.");
+        setIsLoading(false);
+        return;
+      }
+
+      if (!clienteTelefono) {
+        showErrorNotification("El número de teléfono del cliente es obligatorio.");
+        setIsLoading(false);
+        return;
+      }
 
       const reservaData = {
-        servicioId: id,
-        horario,
+        colaboradorId,
+        servicioId,
+        horario: horarioSeleccionado,
         clienteNombre,
         clienteEmail,
         clienteTelefono,
@@ -60,182 +100,169 @@ function CrearReserva() {
       };
 
       await crearReservacion(reservaData);
-
-      setFecha(null);
-      setHora("");
-      setClienteNombre("");
-      setClienteEmail("");
-      setClienteTelefono("");
-      setDireccionCliente("");
-      setObservaciones("");
-
       showSuccessNotification("Reserva creada con éxito");
+      setModalVisible(false);
+      fetchHorario();
     } catch (error) {
-      console.error("Error al crear la reservación:", error);
-      showErrorNotification("Error al crear la reserva. Por favor intente nuevamente.");
+      console.error("Error al crear la reserva:", error);
+      showErrorNotification(error.message || "Error desconocido al crear la reserva.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const horasDisponibles = [
-    "08:00", "09:00", "10:00", "11:00", "12:00",
-    "13:00", "14:00", "15:00", "16:00", "17:00",
-  ];
+  const avanzarSemana = () => {
+    const nuevaSemana = new Date(semanaInicio);
+    nuevaSemana.setDate(semanaInicio.getDate() + 7);
+    setSemanaInicio(nuevaSemana);
+  };
+
+  const retrocederSemana = () => {
+    const nuevaSemana = new Date(semanaInicio);
+    nuevaSemana.setDate(semanaInicio.getDate() - 7);
+    setSemanaInicio(nuevaSemana);
+  };
+
+  const fechaActual = new Date();
+  fechaActual.setHours(0, 0, 0, 0);
 
   return (
-    <div className="h-screen w-screen flex">
-      {/* Formulario en la izquierda */}
-      <div className="w-1/2 h-full bg-gray-100 p-8 flex flex-col justify-center">
-        <header className="text-center mb-6">
-          <h1 className="text-5xl font-bold text-blue-700">Crear Reservación</h1>
-          <p className="text-blue-500 mt-2">
-            Completa el formulario con tus datos para realizar tu reserva.
-          </p>
-        </header>
-
-        {/* Mostrar el servicio seleccionado */}
-        {servicio ? (
-          <div className="text-center mb-8">
-            <h3 className="text-2xl font-semibold text-gray-700">
-              Servicio Seleccionado:
-              <span className="text-blue-500 block mt-2">{servicio.nombre}</span>
-            </h3>
-          </div>
-        ) : (
-          <p className="text-center text-gray-500">Cargando servicio...</p>
+    <div className="p-4">
+      <h2 className="text-2xl font-bold text-center mb-2">{servicioNombre}</h2>
+      <h3 className="text-md text-center text-gray-600 mb-4">{colaboradorNombre}</h3>
+      <div className="flex justify-between mb-4">
+        {semanaInicio > fechaActual && (
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            onClick={retrocederSemana}
+          >
+            Semana anterior
+          </button>
         )}
-
-        <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-6">
-          {/* Fecha */}
-          <div>
-            <label htmlFor="fecha" className="block text-sm font-medium text-gray-700 mb-1">
-              <FaCalendarAlt className="inline mr-2 text-blue-500" />
-              Fecha
-            </label>
-            <DatePicker
-              selected={fecha}
-              onChange={(date) => setFecha(date)}
-              className="block w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              dateFormat="dd/MM/yyyy"
-              placeholderText="Selecciona una fecha"
-            />
-          </div>
-
-          {/* Hora */}
-          <div>
-            <label htmlFor="hora" className="block text-sm font-medium text-gray-700 mb-1">
-              <FaClock className="inline mr-2 text-blue-500" />
-              Hora
-            </label>
-            <select
-              id="hora"
-              value={hora}
-              onChange={(e) => setHora(e.target.value)}
-              className="block w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">Selecciona una hora</option>
-              {horasDisponibles.map((hora) => (
-                <option key={hora} value={hora}>
-                  {hora}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Nombre */}
-          <div>
-            <label htmlFor="clienteNombre" className="block text-sm font-medium text-gray-700 mb-1">
-              <FaUser className="inline mr-2 text-blue-500" />
-              Nombre del Cliente
-            </label>
-            <input
-              type="text"
-              id="clienteNombre"
-              value={clienteNombre}
-              onChange={(e) => setClienteNombre(e.target.value)}
-              className="block w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              required
-            />
-          </div>
-
-          {/* Email */}
-          <div>
-            <label htmlFor="clienteEmail" className="block text-sm font-medium text-gray-700 mb-1">
-              <FaEnvelope className="inline mr-2 text-blue-500" />
-              Correo Electrónico
-            </label>
-            <input
-              type="email"
-              id="clienteEmail"
-              value={clienteEmail}
-              onChange={(e) => setClienteEmail(e.target.value)}
-              className="block w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              required
-            />
-          </div>
-
-          {/* Teléfono */}
-          <div>
-            <label htmlFor="clienteTelefono" className="block text-sm font-medium text-gray-700 mb-1">
-              <FaPhone className="inline mr-2 text-blue-500" />
-              Teléfono
-            </label>
-            <input
-              type="tel"
-              id="clienteTelefono"
-              value={clienteTelefono}
-              onChange={(e) => setClienteTelefono(e.target.value)}
-              className="block w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              required
-            />
-          </div>
-
-          {/* Dirección */}
-          <div>
-            <label htmlFor="direccionCliente" className="block text-sm font-medium text-gray-700 mb-1">
-              <FaMapMarkerAlt className="inline mr-2 text-blue-500" />
-              Dirección
-            </label>
-            <input
-              type="text"
-              id="direccionCliente"
-              value={direccionCliente}
-              onChange={(e) => setDireccionCliente(e.target.value)}
-              className="block w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              required
-            />
-          </div>
-
-          {/* Observaciones */}
-          <div className="col-span-2">
-            <label htmlFor="observaciones" className="block text-sm font-medium text-gray-700 mb-1">
-              <FaStickyNote className="inline mr-2 text-blue-500" />
-              Observaciones
-            </label>
-            <textarea
-              id="observaciones"
-              value={observaciones}
-              onChange={(e) => setObservaciones(e.target.value)}
-              className="block w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-            ></textarea>
-          </div>
-
-          {/* Botón */}
-          <div className="col-span-2 flex justify-end">
-            <button
-              type="submit"
-              className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 shadow-md transition-all"
-            >
-              Crear Reservación
-            </button>
-          </div>
-        </form>
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          onClick={avanzarSemana}
+        >
+          Semana siguiente
+        </button>
       </div>
 
-      {/* Contenedor de imagen */}
-      <div
-        className="w-1/2 h-full bg-cover bg-center"
-        style={{ backgroundImage: "url('/images/4.jpg')" }}
-      ></div>
+      {horario.length > 0 && (
+        <div className="overflow-x-auto">
+          <table className="table-auto border-collapse border border-gray-300 w-full text-center">
+            <thead>
+              <tr>
+                <th className="border border-gray-200 px-2 py-1">Hora</th>
+                {horario.map((dia, index) => (
+                  <th key={index} className="border border-gray-200 px-2 py-1">
+                    {new Date(dia.dia).toLocaleDateString()}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {Array.from({ length: 9 }, (_, i) => i + 8).map((hora) => (
+                <tr key={hora}>
+                  <td className="border border-gray-200 px-2 py-1">
+                    {`${hora}:00 - ${hora + 1}:00`}
+                  </td>
+                  {horario.map((dia) => {
+                    const bloque = dia.horariosDia?.find(
+                      (h) => new Date(h.inicioHora).getHours() === hora
+                    );
+                    return (
+                      <td
+                        key={`${dia.dia}-${hora}`}
+                        className={`border border-gray-200 px-2 py-1 ${
+                          bloque?.ocupado ? "bg-red-500" : "bg-blue-500"
+                        }`}
+                      >
+                        <button
+                          className={`${
+                            bloque?.ocupado
+                              ? "bg-red-500"
+                              : "bg-blue-500 text-white"
+                          } font-semibold w-full h-full rounded text-sm`}
+                          onClick={() => {
+                            if (bloque?.inicioHora) {
+                              const fechaSeleccionada = new Date(bloque.inicioHora);
+                              setHorarioSeleccionado(fechaSeleccionada.toISOString());
+                            }
+                            setModalVisible(true);
+                          }}
+                          disabled={bloque?.ocupado}
+                        >
+                          {bloque?.ocupado ? "Ocupado" : "Disponible"}
+                        </button>
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {modalVisible && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
+          <div className="bg-white p-6 rounded shadow-lg w-96">
+            <h3 className="text-lg font-bold mb-4">Información del Cliente</h3>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <input
+                type="text"
+                placeholder="Nombre"
+                value={clienteNombre}
+                onChange={(e) => setClienteNombre(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+              <input
+                type="email"
+                placeholder="Correo"
+                value={clienteEmail}
+                onChange={(e) => setClienteEmail(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+              <input
+                type="text"
+                placeholder="Teléfono"
+                value={clienteTelefono}
+                onChange={(e) => setClienteTelefono(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+              <input
+                type="text"
+                placeholder="Dirección"
+                value={direccionCliente}
+                onChange={(e) => setDireccionCliente(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+              <textarea
+                placeholder="Observaciones"
+                value={observaciones}
+                onChange={(e) => setObservaciones(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+              <div className="flex justify-end space-x-2">
+                <button
+                  type="button"
+                  className="bg-red-400 text-white px-4 py-2 rounded hover:bg-gray-500"
+                  onClick={() => setModalVisible(false)}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Procesando..." : "Crear Reserva"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

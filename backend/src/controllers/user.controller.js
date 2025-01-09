@@ -42,22 +42,33 @@ async function createUser(req, res) {
   }
 }
 
-async function getUserById(req, res) {
+/**
+ * Obtiene un usuario por su ID.
+ * @param {Object} req - Objeto de solicitud.
+ * @param {Object} res - Objeto de respuesta.
+ */
+export const getUserById = async (req, res) => {
   try {
-    const { params } = req;
-    const { error: paramsError } = userIdSchema.validate(params);
-    if (paramsError) return respondError(req, res, 400, paramsError.message);
+    const { id } = req.params;
 
-    const [user, errorUser] = await UserService.getUserById(params.id);
+    // Verifica si el ID proporcionado es válido
+    if (!id) {
+      return res.status(400).json({ error: "El ID del usuario es requerido" });
+    }
 
-    if (errorUser) return respondError(req, res, 404, errorUser);
+    // Busca al usuario en la base de datos y popula los campos de roles y servicios
+    const user = await User.findById(id).populate("roles").populate("servicios");
 
-    respondSuccess(req, res, 200, user);
+    if (!user) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    res.json(user);
   } catch (error) {
-    handleError(error, "user.controller -> getUserById");
-    respondError(req, res, 500, "No se pudo obtener el usuario");
+    console.error("Error al obtener el usuario:", error.message);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
-}
+};
 
 export const obtenerColaboradores = async (req, res) => {
   try {

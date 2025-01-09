@@ -18,6 +18,20 @@ export const obtenerReservaPorId = async (idReserva) => {
   }
 };
 
+/**
+ * Obtiene un colaborador por su ID.
+ * @param {string} colaboradorId - ID del colaborador
+ * @returns {Object} - Datos del colaborador
+ */
+export const getColaboradorPorId = async (colaboradorId) => {
+  try {
+    const response = await axios.get(`/users/${colaboradorId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener colaborador por ID:", error.response?.data || error.message);
+    throw error.response?.data || error;
+  }
+};
 
 /**
  * Elimina una reserva por su ID.
@@ -37,6 +51,26 @@ export const eliminarReservaPorId = async (idReserva) => {
   }
 };
 
+/**
+ * Obtiene los colaboradores disponibles.
+ * @returns {Promise<Array>} - Lista de colaboradores disponibles.
+ */
+export const obtenerColaboradoresDisponibles = async () => {
+  try {
+    const response = await axios.get("/reservaciones/disponibles");
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener colaboradores disponibles:", error.response?.data || error.message);
+    throw error.response?.data || error;
+  }
+};
+
+/**
+ * Asigna un colaborador a una reservación.
+ * @param {string} reservacionId - ID de la reservación
+ * @param {string} colaboradorId - ID del colaborador
+ * @returns {Object} - Confirmación de asignación
+ */
 export const asignarColaborador = async (reservacionId, colaboradorId) => {
   try {
     const response = await axios.patch("/reservaciones/asignar", {
@@ -50,7 +84,6 @@ export const asignarColaborador = async (reservacionId, colaboradorId) => {
   }
 };
 
-
 /**
  * Crea una nueva reservación.
  * @param {Object} reservaData - Datos de la reservación a crear
@@ -63,14 +96,13 @@ export const crearReservacion = async (reservaData) => {
   } catch (error) {
     const errorMessage =
       error.response?.data?.error || "Error desconocido al crear la reservación";
-    const errorDetails =
-      error.response?.data?.details || "Sin detalles adicionales";
+    
     console.error(
       "Error al crear reservación:",
       errorMessage,
-      errorDetails
+    
     );
-    throw new Error(`${errorMessage}: ${errorDetails}`);
+    throw new Error(`${errorMessage}`);
   }
 };
 
@@ -93,7 +125,7 @@ export const obtenerReservasPorColaborador = async (colaboradorId) => {
 };
 
 /**
- * Obtener una reservación por su ID
+ * Obtener una reservación por su ID.
  * @param {string} id - ID de la reservación
  * @returns {Promise<Object>} - Reservación encontrada
  */
@@ -114,6 +146,7 @@ export const obtenerReservacionPorId = async (id) => {
 export const obtenerReservacionesAgrupadas = async () => {
   try {
     const res = await axios.get("/reservaciones/agrupadas");
+    console.log("Reservaciones agrupadas:", res.data); // Verifica la estructura aquí
     return res.data;
   } catch (error) {
     const errorMessage =
@@ -140,16 +173,48 @@ export const obtenerReservas = async () => {
     throw new Error(errorMessage);
   }
 };
+
 /**
  * Obtiene todos los colaboradores disponibles
  * @returns {Array} - Lista de colaboradores
  */
 export const obtenerColaboradores = async () => {
   try {
-    const response = await axios.get('/users/colaboradores');
+    const response = await axios.get("/users/colaboradores");
     return response.data;
   } catch (error) {
-    console.error('Error al obtener colaboradores:', error.response?.data || error.message);
+    console.error("Error al obtener colaboradores:", error.response?.data || error.message);
+    throw error.response?.data || error;
+  }
+};
+
+/**
+ * Obtiene colaboradores filtrados por servicio.
+ * @param {string} servicioId - ID del servicio
+ * @returns {Array} - Lista de colaboradores
+ */
+export const obtenerColaboradoresPorServicio = async (servicioId) => {
+  try {
+    const response = await axios.get(`/reservaciones/colaboradores/por-servicio?servicioId=${servicioId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener colaboradores por servicio:", error.response?.data || error.message);
+    throw error.response?.data || error;
+  }
+};
+
+/**
+ * Obtiene el horario semanal de un colaborador.
+ * @param {string} colaboradorId - ID del colaborador
+ * @param {Date} semanaInicio - Fecha de inicio de la semana
+ * @returns {Array} - Horario semanal del colaborador
+ */
+export const getHorarioColaborador = async (colaboradorId, semanaInicio) => {
+  try {
+    const response = await axios.get(`/reservaciones/colaboradores/horario?colaboradorId=${colaboradorId}&semanaInicio=${semanaInicio.toISOString()}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener horario del colaborador:", error.response?.data || error.message);
     throw error.response?.data || error;
   }
 };
@@ -164,4 +229,8 @@ export default {
   obtenerReservas,
   asignarColaborador,
   obtenerColaboradores,
+  obtenerColaboradoresPorServicio,
+  getColaboradorPorId,
+  getHorarioColaborador,
+  obtenerColaboradoresDisponibles,
 };

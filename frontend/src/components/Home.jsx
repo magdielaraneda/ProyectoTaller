@@ -52,10 +52,17 @@ export default function HomePage() {
     },
     {
       id: 'CrearUsuarios',
-      name: 'Crear Usuarios',
-      description: 'Creación de Usuarios.',
-      icon: '👤',
+      name: 'Eliminar Usuario',
+      description: 'Eliminar Usuario.',
+      icon: '❌',
       action: () => navigate('/UserFunctionsRoute'),
+    },
+    {
+      id: 'chat',
+      name: 'Chat',
+      description: 'Comunícate con otros usuarios.',
+      icon: '💬',
+      action: () => navigate('/chat'),
     },
   ];
 
@@ -67,6 +74,20 @@ export default function HomePage() {
       icon: '📆',
       action: () => navigate('/reservasAgrupadas'),
     },
+    {
+      id: 'assign-turnos',
+      name: 'Revisar Encuestas',
+      description: 'Aquí puedes ver las encuestas',
+      icon: '📝',
+      action: () => navigate('/detallesEncuesta/:id'),
+    },
+    {
+      id: 'chat',
+      name: 'Chat',
+      description: 'Comunícate con otros usuarios.',
+      icon: '💬',
+      action: () => navigate('/chat'),
+    },
   ];
 
   const calloutsColaborador = [
@@ -76,6 +97,13 @@ export default function HomePage() {
       description: 'Revisar tus reservaciones asignadas.',
       icon: '📆',
       action: () => navigate('/home-colaborador'),
+    },
+    {
+      id: 'chat',
+      name: 'Chat',
+      description: 'Comunícate con otros usuarios.',
+      icon: '💬',
+      action: () => navigate('/chat'),
     },
   ];
 
@@ -100,6 +128,13 @@ export default function HomePage() {
       description: 'Completar encuestas de satisfacción.',
       icon: '📝',
       action: () => navigate('/encuestas'),
+    },
+    {
+      id: 'chat',
+      name: 'Chat',
+      description: 'Comunícate con otros usuarios.',
+      icon: '💬',
+      action: () => navigate('/chat'),
     },
   ];
 

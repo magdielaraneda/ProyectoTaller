@@ -4,7 +4,6 @@ import axios from "./root.service";
  * Crear un nuevo reporte
  * @param {FormData} reporteData - Datos del reporte en formato FormData
  * @returns {Object} - Reporte creado
- * @throws {Error} - Lanza un error si la solicitud falla
  */
 export const crearReporte = async (reporteData) => {
   try {
@@ -13,10 +12,11 @@ export const crearReporte = async (reporteData) => {
     });
     return res.data;
   } catch (error) {
-    const errorMessage = error.response?.data?.error || "Error desconocido al crear el reporte";
-    throw new Error(errorMessage);
+    console.error("Error al crear el reporte:", error.response?.data || error.message);
+    throw new Error(error.response?.data?.error || "Error desconocido al crear el reporte");
   }
 };
+
 /**
  * Actualizar un reporte existente
  * @param {string} id - ID del reporte
@@ -53,13 +53,14 @@ export const obtenerReportesCompletados = async () => {
  * Obtener un reporte por ID
  * @param {string} id - ID del reporte
  * @returns {Object} - Detalles del reporte
- * @throws {Error} - Lanza un error si la solicitud falla
  */
 export const obtenerReportePorId = async (id) => {
   try {
     const res = await axios.get(`/reportes/${id}`);
+    console.log("Reporte obtenido:", res.data);
     return res.data;
   } catch (error) {
+    console.error("Error al obtener el reporte:", error.response?.data || error.message);
     throw new Error(error.response?.data?.error || "Error desconocido al obtener el reporte");
   }
 };

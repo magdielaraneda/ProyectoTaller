@@ -5,16 +5,19 @@ export const getServicios = async (req, res) => {
   const { categoria } = req.query;
   try {
     const query = categoria ? { categoria } : {};
-    const servicios = await Servicio.find(query).select('nombre categoria precio description');
+    const servicios = await Servicio.find(query).select("nombre categoria precio description subServicios");
+
     if (servicios.length === 0) {
       return res.status(404).json({ message: "No se encontraron servicios" });
     }
+
     res.json(servicios);
   } catch (error) {
     console.error(`[GET /servicios] Error: ${error.message}`);
     res.status(500).json({ error: "Error al obtener los servicios", details: error.message });
   }
 };
+
 
 export const createServicio = async (req, res) => {
   const { error } = servicioBodySchema.validate(req.body, { abortEarly: false });

@@ -34,6 +34,12 @@ const userSchema = new mongoose.Schema({
       leida: { type: Boolean, default: false },
     },
   ],
+  servicios: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Servicio", // Referencia al modelo Servicio
+    },
+  ],
 });
 
 userSchema.statics.comparePassword = async function (inputPassword, hashedPassword) {

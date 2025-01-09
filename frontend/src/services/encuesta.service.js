@@ -8,7 +8,7 @@ import axios from "./root.service";
  */
 export const enviarEncuesta = async (encuestaData) => {
   try {
-    const res = await axios.post("/encuestas", encuestaData);
+    const res = await axios.post("/encuesta", encuestaData); 
     return res.data;
   } catch (error) {
     const errorMessage = error.response?.data?.error || "Error desconocido al enviar la encuesta";
@@ -22,10 +22,9 @@ export const enviarEncuesta = async (encuestaData) => {
  * @returns {Array|Object} - Encuestas obtenidas
  * @throws {Error} - Lanza un error si la solicitud falla
  */
-export const obtenerEncuestas = async (id) => {
+export const obtenerEncuestas = async () => {
   try {
-    const endpoint = id ? `/encuestas/${id}` : "/encuestas";
-    const res = await axios.get(endpoint);
+    const res = await axios.get("/encuesta");
     return res.data;
   } catch (error) {
     const errorMessage = error.response?.data?.error || "Error desconocido al obtener encuestas";
@@ -41,7 +40,7 @@ export const obtenerEncuestas = async (id) => {
  */
 export const buscarEncuestasPorColaborador = async (username) => {
   try {
-    const res = await axios.get(`/encuestas?username=${username}`);
+    const res = await axios.get(`/encuesta?username=${username}`);
     return res.data;
   } catch (error) {
     const errorMessage = error.response?.data?.error || "Error desconocido al buscar encuestas por colaborador";
@@ -57,7 +56,7 @@ export const buscarEncuestasPorColaborador = async (username) => {
  */
 export const eliminarEncuesta = async (id) => {
   try {
-    const res = await axios.delete(`/encuestas/${id}`);
+    const res = await axios.delete(`/encuesta/${id}`);
     return res.data;
   } catch (error) {
     const errorMessage = error.response?.data?.error || "Error desconocido al eliminar la encuesta";

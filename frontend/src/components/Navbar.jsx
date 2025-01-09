@@ -23,6 +23,12 @@ export default function Navbar() {
     { name: "Creación de nuevos usuarios", href: "/CrearUsuarioRoute" },
   ];
 
+  const navCliente = [
+    { name: "Mis Reservas", href: "/misReservas" },
+    { name: "Historial", href: "/historialReservas" },
+    { name: "Encuestas", href: "/encuestas" },
+  ];
+
   const navigation = [];
   if (user?.roles?.includes("gerente")) {
     navigation.push(...navGerente);
@@ -32,6 +38,9 @@ export default function Navbar() {
   }
   if (user?.roles?.includes("admin")) {
     navigation.push(...navAdmin);
+  }
+  if (user?.roles?.includes("cliente")) {
+    navigation.push(...navCliente);
   }
 
   const handleLogout = () => {

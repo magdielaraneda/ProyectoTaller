@@ -10,11 +10,10 @@ import verifyJWT from '../middlewares/authentication.middleware.js';
 import { isAdmin } from '../middlewares/authorization.middleware.js';
 
 const router = express.Router();
-
+router.get("/:id", getServicioById);
 router.get('/', getServicios);
 router.use(verifyJWT);
 router.post("/", isAdmin, createServicio);
-router.get("/:id", getServicioById);
 router.put("/:id", isAdmin, updateServicio);
 router.delete("/:id", isAdmin, deleteServicio);
 

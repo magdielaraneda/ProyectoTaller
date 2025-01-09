@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
-import { getServicios } from "../services/servicio.service";
+import { obtenerColaboradoresDisponibles } from "../services/reserva.service";
 import { useNavigate } from "react-router-dom";
+import { getServicios } from "../services/servicio.service";
 
 function PublicServices() {
   const navigate = useNavigate();
 
-  const [servicios, setServicios] = useState([]);
-  const [expandedCard, setExpandedCard] = useState(null);
+  const [servicios, setServicios] = useState([]); // Lista de servicios
+  const [colaboradores, setColaboradores] = useState([]); // Lista de colaboradores filtrados
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null); // Categoría seleccionada
+  const [expandedCard, setExpandedCard] = useState(null); // Servicio expandido
 
   useEffect(() => {
     const fetchServicios = async () => {
@@ -21,112 +24,100 @@ function PublicServices() {
     fetchServicios();
   }, []);
 
-  const categorias = {
-    "prevención de riesgos": {
-      servicios: servicios.filter(
-        (servicio) => servicio.categoria === "prevención de riesgos"
-      ),
-      bgImage: "url('/images/P.jpg')",
-    },
-    estética: {
-      servicios: servicios.filter(
-        (servicio) => servicio.categoria === "estética"
-      ),
-      bgImage: "url('/images/E.jpg')",
-    },
-    limpieza: {
-      servicios: servicios.filter(
-        (servicio) => servicio.categoria === "limpieza"
-      ),
-      bgImage: "url('/images/L.jpg')",
-    },
+  const handleVerColaboradores = async (servicioId) => {
+    try {
+      const data = await obtenerColaboradoresDisponibles(); // Obtiene todos los colaboradores disponibles
+      setColaboradores(data);
+      setExpandedCard(servicioId); // Expande el servicio para mostrar colaboradores
+    } catch (error) {
+      console.error("Error al obtener colaboradores:", error);
+    }
   };
 
-  const toggleDescription = (id) => {
-    setExpandedCard((prev) => (prev === id ? null : id));
+  const handleSeleccionarColaborador = (servicioId, colaboradorId) => {
+    navigate(`/CrearReservaRoute/${servicioId}/${colaboradorId}`);
   };
+
+  const categorias = Array.from(new Set(servicios.map((servicio) => servicio.categoria)));
+  const serviciosFiltrados = categoriaSeleccionada
+    ? servicios.filter((servicio) => servicio.categoria === categoriaSeleccionada)
+    : [];
 
   return (
     <div className="bg-white min-h-screen w-full">
-      {/* Encabezado */}
-      <header className="bg-blue-700 text-white py-4 shadow-md">
+      <header className="bg-white-700 text-white py-4 shadow-md">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <h1 className="text-2xl font-bold">Servicios Disponibles</h1>
-          <p className="mt-1 text-blue-200 text-sm">
-            Selecciona un servicio para conocer más detalles.
+          <h1 className="text-2xl font-bold">Servicios por Categoría</h1>
+          <p className="mt-1 text-blue-800 text-sm">
+            Haz clic en una categoría para ver los servicios disponibles.
           </p>
         </div>
       </header>
 
-      {/* Contenido principal */}
-      <main className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-[calc(100vh-80px)]">
-        {Object.entries(categorias).map(([categoria, { servicios, bgImage }]) => (
-          <div
-            key={categoria}
-            className="relative flex flex-col justify-start items-center p-6"
-            style={{
-              backgroundImage: `${bgImage}`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              filter: "brightness(0.8)",
-              overflowY: "auto",
-            }}
-          >
-            {/* Contenedor de título */}
-            <div className="bg-white bg-opacity-80 px-4 py-2 rounded-md shadow-md mb-4">
-              <h2 className="text-gray-800 text-lg font-bold text-center">
-                {categoria.charAt(0).toUpperCase() + categoria.slice(1)}
-              </h2>
-            </div>
-            <ul className="w-full space-y-2">
-              {servicios.map((servicio) => (
-                <li
-                  key={servicio._id}
-                  className="bg-white bg-opacity-90 shadow-md rounded-md p-2 flex justify-between items-center"
-                >
-                  <span className="text-sm text-gray-800 font-medium">
-                    {servicio.nombre} - ${servicio.precio}
-                  </span>
-                  <button
-                    onClick={() => toggleDescription(servicio._id)}
-                    className="px-3 py-1 text-xs font-medium text-gray-800 bg-gray-200 border border-gray-300 rounded-full hover:bg-gray-300 transition"
-                  >
-                    Detalle
-                  </button>
-                </li>
-              ))}
-            </ul>
+      <main className="max-w-7xl mx-auto px-4 py-6">
+        {/* Lista de Categorías */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {categorias.map((categoria) => (
+            <button
+              key={categoria}
+              className={`p-4 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 ${
+                categoriaSeleccionada === categoria ? "bg-blue-700" : ""
+              }`}
+              onClick={() => setCategoriaSeleccionada(categoria)}
+            >
+              {categoria.charAt(0).toUpperCase() + categoria.slice(1)}
+            </button>
+          ))}
+        </div>
 
-            {/* Tarjeta expandida */}
-            {servicios.map((servicio) =>
-              expandedCard === servicio._id ? (
+        {/* Servicios Filtrados */}
+        {categoriaSeleccionada && (
+          <div className="mt-6">
+            <h2 className="text-xl font-bold text-gray-700">
+              Servicios en la categoría: {categoriaSeleccionada}
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+              {serviciosFiltrados.map((servicio) => (
                 <div
-                  key={`detail-${servicio._id}`}
-                  className="absolute top-0 left-0 w-full h-full bg-white bg-opacity-95 p-6 rounded-md shadow-lg flex flex-col items-center justify-center space-y-4"
+                  key={servicio._id}
+                  className="p-4 bg-white shadow-md rounded-md border"
                 >
-                  <h3 className="text-lg font-semibold text-gray-800">
-                    {servicio.nombre}
-                  </h3>
-                  <p className="text-sm text-gray-600 text-center">
-                    {servicio.description}
-                  </p>
+                  <h3 className="text-lg font-bold">{servicio.nombre}</h3>
+                  <p className="text-gray-500">{servicio.description}</p>
+                  <p className="mt-2 text-gray-700 font-semibold">${servicio.precio}</p>
                   <button
-                    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                    onClick={() => navigate(`/CrearReservaRoute/${servicio._id}`)}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 mt-4"
+                    onClick={() => handleVerColaboradores(servicio._id)}
                   >
-                    Reservar Aquí
+                    Selecciona un Colaborador
                   </button>
-                  <button
-                    onClick={() => toggleDescription(null)}
-                    className="text-red-500 text-sm hover:underline"
-                  >
-                    Cerrar
-                  </button>
+
+                  {/* Mostrar colaboradores disponibles para el servicio */}
+                  {expandedCard === servicio._id && (
+                    <ul className="mt-4 space-y-2">
+                      {colaboradores.map((colaborador) => (
+                        <li
+                          key={colaborador._id}
+                          className="flex justify-between items-center p-2 bg-gray-100 rounded-md shadow"
+                        >
+                          <span>{colaborador.username}</span>
+                          <button
+                            className="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600"
+                            onClick={() =>
+                              handleSeleccionarColaborador(servicio._id, colaborador._id)
+                            }
+                          >
+                            Seleccionar
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
-              ) : null
-            )}
+              ))}
+            </div>
           </div>
-        ))}
+        )}
       </main>
     </div>
   );

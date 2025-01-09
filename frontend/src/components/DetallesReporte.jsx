@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { obtenerReportePorId, eliminarReporte } from "../services/reporte.service";
-import { showSuccessNotification, showErrorNotification } from "../helpers/swaHelper";
+import { obtenerReportePorId} from "../services/reporte.service";
+
 
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
@@ -25,16 +25,6 @@ function DetallesReporte() {
     fetchReporte();
   }, [id]);
 
-  const handleEliminarReporte = async () => {
-    try {
-      await eliminarReporte(id);
-      showSuccessNotification("Reporte eliminado con éxito");
-      navigate("/reservaciones");
-    } catch (error) {
-      console.error("Error al eliminar el reporte:", error);
-      showErrorNotification("Error al eliminar el reporte.");
-    }
-  };
 
   if (error) return <div className="text-center text-red-500">{error}</div>;
   if (!reporte) return <div className="text-center text-gray-500">Cargando reporte...</div>;
@@ -90,12 +80,6 @@ function DetallesReporte() {
           </div>
         )}
 
-        <button
-          className="bg-red-500 text-white px-4 py-2 rounded mt-4"
-          onClick={handleEliminarReporte}
-        >
-          Eliminar Reporte
-        </button>
       </div>
     </div>
   );
