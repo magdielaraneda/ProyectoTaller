@@ -16,7 +16,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const allowedOrigins = [
-  "https://frontend-b5hjmqltg-magdielaranedas-projects.vercel.app/",
+  "process.env.FRONTEND_URL",
   "http://localhost:5173",
 ];
 
